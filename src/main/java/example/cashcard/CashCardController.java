@@ -25,8 +25,8 @@ public class CashCardController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<CashCard> findById(@PathVariable Long id,Principal principal) {
-        CashCard cashCard = findCashCard(id,principal);
+    public ResponseEntity<CashCard> findById(@PathVariable Long id, Principal principal) {
+        CashCard cashCard = findCashCard(id, principal);
 
         if (cashCard != null) {
             return ResponseEntity.ok(cashCard);
@@ -34,8 +34,9 @@ public class CashCardController {
             return ResponseEntity.notFound().build();
         }
     }
-    private CashCard findCashCard (@PathVariable Long id, Principal principal) {
-        return cashCardRepository.findByIdAndOwner(id,principal.getName());
+
+    private CashCard findCashCard(@PathVariable Long id, Principal principal) {
+        return cashCardRepository.findByIdAndOwner(id, principal.getName());
     }
 
     @GetMapping
@@ -61,7 +62,7 @@ public class CashCardController {
 
     @PutMapping("/{requestedId}")
     private ResponseEntity<Void> putCashCard(@PathVariable Long requestedId, @RequestBody CashCard cashCardUpdate, Principal principal) {
-        CashCard cashCard = cashCardRepository.findByIdAndOwner(requestedId, principal.getName());
+        CashCard cashCard = findCashCard(requestedId, principal);
         if (cashCard != null) {
             CashCard updatedCashCard = new CashCard(cashCard.id(), cashCardUpdate.amount(), principal.getName());
             cashCardRepository.save(updatedCashCard);
@@ -69,6 +70,20 @@ public class CashCardController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @DeleteMapping("/{requestedId}")
+    private ResponseEntity<Void> deleteCashCard(@PathVariable Long requestedId , Principal principal) {
+        if (!cashCardRepository.existsByIdAndOwner(requestedId,principal.getName())){
+            return ResponseEntity.notFound().build();
+        }
+
+
+        cashCardRepository.deleteById(requestedId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 }
 
