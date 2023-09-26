@@ -12,7 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
+//import java.util.Optional;
 
 
 @RestController
@@ -25,13 +25,17 @@ public class CashCardController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<CashCard> findById(@PathVariable Long id) {
-        Optional<CashCard> cashCardOptional = cashCardRepository.findById(id);
-        if (cashCardOptional.isPresent()) {
-            return ResponseEntity.ok(cashCardOptional.get());
+    public ResponseEntity<CashCard> findById(@PathVariable Long id,Principal principal) {
+        CashCard cashCard = findCashCard(id,principal);
+
+        if (cashCard != null) {
+            return ResponseEntity.ok(cashCard);
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+    private CashCard findCashCard (@PathVariable Long id, Principal principal) {
+        return cashCardRepository.findByIdAndOwner(id,principal.getName());
     }
 
     @GetMapping
