@@ -184,7 +184,13 @@ class CashCardApplicationTests {
     }
 @Test
     void shouldNotUpdateACashCardThatDoesNotExist (){
-        CashCard unknownCashcard =
+        CashCard unknownCashcard = new CashCard(null,19.99,null);
+        HttpEntity<CashCard> request = new HttpEntity<>(unknownCashcard);
+        ResponseEntity<Void> response = restTemplate
+                .withBasicAuth("sarah1", "abc123")
+                .exchange("/cashcards/9999",HttpMethod.PUT,request,Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
 }
 
 
